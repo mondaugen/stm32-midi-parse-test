@@ -1,0 +1,9 @@
+*.hex
+*.bin
+*.elf
+*.a
+*.o
+*~
+*.swp
+*.gch
+tags
