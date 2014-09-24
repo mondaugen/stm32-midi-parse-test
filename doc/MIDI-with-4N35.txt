@@ -1,0 +1,6 @@
+To use the 4N35 Optocoupler, the source load resistance must be around 100
+ohms or else it seems that the switching time is too long (maybe?). In any
+case it didn't work with the value of 220 ohms that the MIDI Spec. gives. You
+also need to drive the input to the UARTrx pin with 5V instead of 3V. 
+With the 6N138 you can probably respect the values the MIDI Spec. gives.
+This is just for my own purposes, in production I should use the 6N138.

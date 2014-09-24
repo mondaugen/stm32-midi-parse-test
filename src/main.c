@@ -3,8 +3,8 @@
 #include "stm32f4xx.h" 
 #include "leds.h" 
 
-#define MIDI_BAUD_RATE 9600
-#define UART_DMA_BUF_SIZE ((uint32_t)4)
+#define MIDI_BAUD_RATE 31250 
+#define UART_DMA_BUF_SIZE ((uint32_t)24)
 
 char uartDMAData[UART_DMA_BUF_SIZE];
 

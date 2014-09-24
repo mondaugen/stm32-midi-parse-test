@@ -78,7 +78,7 @@ PROJ_OBJS = $(patsubst $(PROJ_SRCS_PATH)/%, objs/%, $(addsuffix .o, $(basename $
 PROJ_SRCS_ASM = $(wildcard $(PROJ_SRCS_PATH)/*.s)
 PROJ_OBJS_ASM = $(patsubst $(PROJ_SRCS_PATH)/%, objs/%, $(addsuffix .o, $(basename $(PROJ_SRCS_ASM))))
 
-PROJ_DEP = $(wildcard $(PROJ_INC_PATH/*.h))
+PROJ_DEP = $(wildcard $(PROJ_INC_PATH)/*.h)
 
 OBJS = $(STM_DRIVER_OBJS) $(PROJ_OBJS) $(PROJ_OBJS_ASM)
 
