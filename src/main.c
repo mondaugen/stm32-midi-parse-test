@@ -25,7 +25,7 @@ void MIDI_note_on_do(void *data, MIDIMsg *msg)
             && (msg->data[1] == 67)) {
         LEDs_redSet();
     }
-    free(msg);
+    MIDIMsg_free(msg);
 }
 
 void MIDI_note_off_do(void *data, MIDIMsg *msg)
@@ -38,7 +38,7 @@ void MIDI_note_off_do(void *data, MIDIMsg *msg)
             && (msg->data[1] == 67)) {
         LEDs_redReset();
     }
-    free(msg);
+    MIDIMsg_free(msg);
 }
 
 int main(void)
