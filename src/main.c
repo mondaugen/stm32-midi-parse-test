@@ -4,6 +4,7 @@
 #include "leds.h" 
 #include "midi_lowlevel.h" 
 #include "mm_midimsgbuilder.h" 
+#include "mm_midirouter_standard.h" 
 
 #define MIDI_MSG_DEBUG 
 #define NUM_MIDI_MSGS 10 
@@ -12,22 +13,46 @@ extern char midiBuffer[]; /* for debugging */
 
 static MIDIMsgBuilder_State_t lastState;
 static MIDIMsgBuilder midiMsgBuilder;
-static int curNumMIDIMsgs = 0;
-static MIDIMsg * midiMsgs[NUM_MIDI_MSGS];
+static MIDI_Router_Standard midiRouter;
+
+void MIDI_note_on_do(void *data, MIDIMsg *msg)
+{
+    if ((MIDIMSG_GET_CHANNEL(msg->data[0]) == 1)
+            && (msg->data[1] == 60)) {
+        LEDs_greenSet();
+    }
+    if ((MIDIMSG_GET_CHANNEL(msg->data[0]) == 1)
+            && (msg->data[1] == 67)) {
+        LEDs_redSet();
+    }
+    free(msg);
+}
+
+void MIDI_note_off_do(void *data, MIDIMsg *msg)
+{
+    if ((MIDIMSG_GET_CHANNEL(msg->data[0]) == 1)
+            && (msg->data[1] == 60)) {
+        LEDs_greenReset();
+    }
+    if ((MIDIMSG_GET_CHANNEL(msg->data[0]) == 1)
+            && (msg->data[1] == 67)) {
+        LEDs_redReset();
+    }
+    free(msg);
+}
 
 int main(void)
 {
-  /*!< At this stage the microcontroller clock setting is already configured, 
-       this is done through SystemInit() function which is called from startup
-       file (startup_stm32f4xx.s) before to branch to application main.
-       To reconfigure the default setting of SystemInit() function, refer to
-        system_stm32f4xx.c file
-     */
-
     /* Initialize MIDI Message builder */
     MIDIMsgBuilder_init(&midiMsgBuilder);
+    
+    /* Initialize the MIDI router */
+    MIDI_Router_Standard_init(&midiRouter);
+    MIDI_Router_addCB(&midiRouter.router, MIDIMSG_NOTE_ON, 1, MIDI_note_on_do, NULL); 
+    MIDI_Router_addCB(&midiRouter.router, MIDIMSG_NOTE_OFF, 1, MIDI_note_off_do, NULL); 
 
     /* Enable LEDs so we can toggle them */
+
     LEDs_Init();
     
     /* Set up midi */
@@ -40,10 +65,7 @@ int main(void)
 
 void do_stuff_with_msg(MIDIMsg *msg)
 {
-    if (curNumMIDIMsgs < NUM_MIDI_MSGS) {
-        midiMsgs[curNumMIDIMsgs] = msg;
-        curNumMIDIMsgs++;
-    }
+    MIDI_Router_handleMsg(&midiRouter.router, msg);
 }
 
 void MIDI_process_byte(char byte)
