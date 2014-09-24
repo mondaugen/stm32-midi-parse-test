@@ -67,9 +67,16 @@ STM_DRIVER_DEP  = inc/stm32f4xx_conf.h inc/stm32f4xx.h $(wildcard $(STM_DRIVER_I
 
 CMSIS_PATH = $(HOME)/Documents/archives/CMSIS
 
+MMMIDI_PATH      = $(HOME)/Documents/development/mmmidi
+MMMIDI_SRCS_PATH = $(MMMIDI_PATH)/src
+MMMIDI_SRCS      = $(wildcard $(MMMIDI_SRCS_PATH)/*.c)
+MMMIDI_INC_PATH  = $(MMMIDI_PATH)/inc
+MMMIDI_OBJS      = $(MMMIDI_SRCS:$(MMMIDI_SRCS_PATH)/%.c=objs/%.o)
+MMMIDI_DEP       = $(wildcard $(MMMIDI_INC_PATH)/*.h)
+
 PROJ_INC_PATH = ./inc
 
-INC  = $(PROJ_INC_PATH) $(CMSIS_PATH)/Include $(STM_DRIVER_INC)
+INC  = $(PROJ_INC_PATH) $(CMSIS_PATH)/Include $(STM_DRIVER_INC) $(MMMIDI_INC_PATH)
 
 PROJ_SRCS_PATH = src
 PROJ_SRCS = $(wildcard $(PROJ_SRCS_PATH)/*.c)
@@ -80,7 +87,7 @@ PROJ_OBJS_ASM = $(patsubst $(PROJ_SRCS_PATH)/%, objs/%, $(addsuffix .o, $(basena
 
 PROJ_DEP = $(wildcard $(PROJ_INC_PATH)/*.h)
 
-OBJS = $(STM_DRIVER_OBJS) $(PROJ_OBJS) $(PROJ_OBJS_ASM)
+OBJS = $(STM_DRIVER_OBJS) $(PROJ_OBJS) $(PROJ_OBJS_ASM) $(MMMIDI_OBJS)
 
 BIN = main.elf
 
@@ -114,6 +121,10 @@ proj: $(BIN)
 $(STM_DRIVER_OBJS): objs/%.o: $(STM_DRIVER_PATH)/src/%.c $(STM_DRIVER_DEP)
 	$(CC) -c $(CFLAGS) $< -o $@
 
+# compile mmmidi
+$(MMMIDI_OBJS): objs/%.o: $(MMMIDI_SRCS_PATH)/%.c $(MMMIDI_DEP)
+	$(CC) -c $(CFLAGS) $< -o $@
+
 # compile asm
 $(PROJ_OBJS_ASM): objs/%.o: $(PROJ_SRCS_PATH)/%.s $(PROJ_DEP)
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -136,4 +147,4 @@ clean:
 	rm objs/*
 
 ctags:
-	ctags -R . $(STM_DRIVER_PATH) $(CMSIS_PATH)
+	ctags -R . $(STM_DRIVER_PATH) $(CMSIS_PATH) $(MMMIDI_PATH)

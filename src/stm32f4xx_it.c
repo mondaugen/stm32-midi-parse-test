@@ -24,6 +24,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
 #include "leds.h"
+#include "midi_lowlevel.h" 
 
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples
   * @{
@@ -177,28 +178,11 @@ void DMA1_Stream0_IRQHandler (void)
     NVIC_ClearPendingIRQ(DMA1_Stream0_IRQn);
 }
 
-/******************************************************************************/
-/*                 STM32F4xx Peripherals Interrupt Handlers                   */
-/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
-/*  available peripheral interrupt handler's name please refer to the startup */
-/*  file (startup_stm32f4xx.s).                                               */
-/******************************************************************************/
-
-/**
-  * @brief  This function handles PPP interrupt request.
-  * @param  None
-  * @retval None
-  */
-/*void PPP_IRQHandler(void)
+void TIM2_IRQHandler(void)
 {
-}*/
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+    NVIC_ClearPendingIRQ(TIM2_IRQn);
+    if (TIM_GetITStatus(TIM2, TIM_IT_Update)) {
+        MIDI_TIMER_INTERRUPT();
+        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    }
+}
